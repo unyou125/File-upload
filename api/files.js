@@ -1,6 +1,5 @@
-// api/files.js
+// Dummy implementation; replace with your logic to retrieve files
 export default async function handler(req, res) {
-    // Fetch the list of files from your storage solution
-    const files = []; // Replace this with your file fetching logic
+    const files = []; // Replace with your file retrieval logic
     res.status(200).json(files);
 }
