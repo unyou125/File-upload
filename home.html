@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('image.png') no-repeat center center/cover;
+            filter: blur(8px) brightness(0.4);
+            z-index: -1;
+        }
+
+        .home-container {
+            position: relative;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            z-index: 1;
+            color: black;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            margin: 10px 0;
+        }
+
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .file-item a {
+            margin-right: 10px;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-image"></div>
+
+    <div class="home-container">
+        <h2>Renegade Raider File Manager</h2>
+        <input type="file" id="fileInput" class="file-input">
+        <button onclick="uploadFile()">Upload</button>
+
+        <div class="file-list" id="fileList"></div>
+    </div>
+
+    <script>
+        // Load files on page load
+        window.onload = function() {
+            loadFiles();
+        };
+
+        // Function to load files
+        async function loadFiles() {
+            try {
+                const response = await fetch('/files');
+                const files = await response.json();
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = '';
+
+                files.forEach(file => {
+                    const sizeInKB = (file.size / 1024).toFixed(2); // Convert size to KB
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        ${file.name} (${sizeInKB} KB) 
+                        <a href="${file.url}" target="_blank">View</a>
+                        <button onclick="deleteFile('${file.name}')">Delete</button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+            } catch (error) {
+                console.error('Error loading files:', error);
+            }
+        }
+
+        // Function to upload files
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('File uploaded successfully.');
+                    loadFiles(); // Refresh file list after upload
+                } else {
+                    alert('Failed to upload file.');
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
+        }
+
+        // Function to delete files
+        async function deleteFile(fileName) {
+            const confirmDelete = confirm(`Are you sure you want to delete "${fileName}"?`);
+
+            if (confirmDelete) {
+                try {
+                    const response = await fetch(`/delete/${fileName}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        alert('File deleted successfully.');
+                        loadFiles(); // Refresh file list after deletion
+                    } else {
+                        alert('Failed to delete file.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting file:', error);
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
