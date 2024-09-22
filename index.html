@@ -122,10 +122,8 @@
                     alert('File uploaded successfully.');
                     loadFiles(); // Refresh file list after upload
                 } else {
-                   if (!response.ok) {
-    const errorText = await response.text();
-    alert(`Failed to upload file: ${errorText}`);
-
+            const errorText = await response.text();
+            alert(`Failed to upload file: ${errorText}`);
                 }
             } catch (error) {
                 console.error('Error uploading file:', error);
