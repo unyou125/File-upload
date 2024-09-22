@@ -6,14 +6,14 @@ async function uploadFile() {
     formData.append('file', fileInput.files[0]);
 
     try {
-        const response = await fetch('/api/upload', {  // Update the URL
+        const response = await fetch('/api/upload', {
             method: 'POST',
             body: formData
         });
 
         if (response.ok) {
             alert('File uploaded successfully.');
-            loadFiles();
+            loadFiles(); // Refresh file list after upload
         } else {
             const errorText = await response.text();
             alert(`Failed to upload file: ${errorText}`);
@@ -25,7 +25,7 @@ async function uploadFile() {
 
 async function loadFiles() {
     try {
-        const response = await fetch('/api/files');  // Update the URL
+        const response = await fetch('/api/files');
         const files = await response.json();
         const fileList = document.getElementById('fileList');
         fileList.innerHTML = '';
@@ -46,13 +46,13 @@ async function deleteFile(fileName) {
 
     if (confirmDelete) {
         try {
-            const response = await fetch(`/api/delete?filename=${fileName}`, {  // Update the URL
+            const response = await fetch(`/api/delete?filename=${fileName}`, {
                 method: 'DELETE'
             });
 
             if (response.ok) {
                 alert('File deleted successfully.');
-                loadFiles();
+                loadFiles(); // Refresh file list after deletion
             } else {
                 alert('Failed to delete file.');
             }
